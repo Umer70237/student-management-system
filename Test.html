@@ -4,6 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test</title>
+
+    <style>
+      li{
+        display: flex;
+      }
+
+      li h2{
+        margin-left: 30px;
+      }
+      .container{
+        display: flex;
+        gap: 30px;
+        margin-left: 30px;
+      }
+
+      li .edit_btn{
+          margin: 30px;
+
+      }
+      li .del_btn{
+        margin: 30px 10px;
+      }
+
+
+      
+    </style>
   </head>
   <body>
     <!-- student-management-system -->
@@ -28,18 +54,7 @@
 
       <section style="display: flex; gap: 30px">
         <div>
-          <h2>Student Names</h2>
           <ul id="studentList"></ul>
-        </div>
-
-        <div>
-          <h2>Father Names</h2>
-          <ul id="fatherList"></ul>
-        </div>
-
-        <div>
-          <h2>Actions</h2>
-          <ul id="actionsList"></ul>
         </div>
       </section>
     </main>
@@ -49,16 +64,16 @@
       const fatherInput = document.getElementById("fatherInput");
       const submitBtn = document.getElementById("submitBtn");
       const studentList = document.getElementById("studentList");
-      const fatherList = document.getElementById("fatherList");
-      const actionsList = document.getElementById("actionsList");
 
       let isEditMode = false;
       let currentStudentItem = null;
       let currentFatherItem = null;
+      let isItemList = true;
 
       submitBtn.addEventListener("click", handleSubmit);
 
       function handleSubmit() {
+        
         let studentValue = studentInput.value.trim();
         let fatherValue = fatherInput.value.trim();
 
@@ -80,56 +95,76 @@
           createRecord(studentValue, fatherValue);
         }
 
+        
+
         clearInputs();
       }
 
       function createRecord(studentValue, fatherValue) {
-        let studentItem = document.createElement("li");
-        let fatherItem = document.createElement("li");
-        studentItem.textContent = studentValue;
-        fatherItem.textContent = fatherValue;
+        
+        
 
+        let studentItem = document.createElement("li");
+        let std_head = document.createElement("h2");
+        std_head.textContent = "Student";
+        let father_head = document.createElement("h2");
+        father_head.textContent = "Father";
         let editBtn = document.createElement("button");
         editBtn.textContent = "Edit";
+        editBtn.className = "edit_btn";
         let deleteBtn = document.createElement("button");
         deleteBtn.textContent = "delete";
+        deleteBtn.className = "del_btn";
+        let student_name = document.createElement("p");
+        student_name.textContent = studentValue;
+        let father_name = document.createElement("p");
+        father_name.textContent = fatherValue;
+        let container = document.createElement("div");
+        container.className = "container";
 
+        if(isItemList == true){
+        studentItem.appendChild(std_head);
+        studentItem.appendChild(father_head);
+}
+
+          isItemList = false;
         let lineBreak = document.createElement("br");
 
         editBtn.addEventListener("click", () => {
-          enableEditMode(studentItem, fatherItem);
+          enableEditMode(student_name,father_name);
         });
 
         deleteBtn.addEventListener("click", () => {
-          deleteRecord(studentItem, fatherItem, deleteBtn, editBtn, lineBreak);
+          deleteRecord(container,student_name);
         });
 
-        studentList.appendChild(studentItem);
-        fatherList.appendChild(fatherItem);
-        actionsList.appendChild(editBtn);
-        actionsList.appendChild(deleteBtn);
-        actionsList.appendChild(lineBreak);
+        studentList.appendChild(studentItem);  
+         container.appendChild(student_name);
+        container.appendChild(father_name);      
+        container.appendChild(editBtn);
+        container.appendChild(deleteBtn);
+       
+        studentList.appendChild(container);
+        
       }
 
-      function enableEditMode(studentItem, fatherItem) {
+      function enableEditMode(student_name,father_name) {
         isEditMode = true;
-        currentStudentItem = studentItem;
-        currentFatherItem = fatherItem;
-
-        studentInput.value = studentItem.textContent;
-        fatherInput.value = fatherItem.textContent;
+        currentStudentItem = student_name;
+        currentFatherItem = father_name;
+        studentInput.value = student_name.textContent;
+        fatherInput.value = father_name.textContent;
         submitBtn.textContent = "save changes";
       }
 
       function updateRecord(studentValue, fatherValue) {
         currentStudentItem.textContent = studentValue;
-        currentFatherItem.textContent = fatherValue;
+        
         resetEditMode();
       }
 
       function resetEditMode() {
         isEditMode = false;
-        currentFatherItem = null;
         currentStudentItem = null;
         submitBtn.textContent = "Add";
         clearInputs();
@@ -140,27 +175,18 @@
         fatherInput.value = "";
       }
 
-      function deleteRecord(
-        studentItem,
-        fatherItem,
-        deleteBtn,
-        editBtn,
-        lineBreak,
+      function deleteRecord(container,student_name
       ) {
         const confirmed = window.confirm(
           "Are you sure you want to delete this?",
         );
         if (confirmed) {
-          if (isEditMode && studentItem == currentStudentItem) {
+          const isDeletingSameItem = isEditMode && student_name == currentStudentItem;
+          if (isDeletingSameItem) {
             resetEditMode();
           }
 
-          studentList.removeChild(studentItem);
-          fatherList.removeChild(fatherItem);
-
-          actionsList.removeChild(editBtn);
-          actionsList.removeChild(deleteBtn);
-          actionsList.removeChild(lineBreak);
+          studentList.removeChild(container);
         } else {
           console.log("deletion cancelled");
         }
